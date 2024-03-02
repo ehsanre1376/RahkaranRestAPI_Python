@@ -2,6 +2,9 @@ import requests
 import rsa
 import json
 import binascii
+from datetime import datetime
+G_sessionv =""
+G_ExpireDate = datetime(2020, 3, 15)
 G_BaseURL = "http://127.0.0.1/PortfolioDEV"
 G_UserName ="admin"
 G_PassWord = "admin"
@@ -12,6 +15,9 @@ def bytes_to_hex_string(byte_array):
     return binascii.hexlify(byte_array).decode()
 
 def login(user_name = G_UserName, password=G_PassWord):
+    global G_ExpireDate
+    if datetime.now() > G_ExpireDate :
+        return G_sessionv,G_ExpireDate
     url = G_BaseURL+"/Services/Framework/AuthenticationService.svc"
     session_url = url + "/session"
     login_url = url + "/login"
@@ -35,6 +41,11 @@ def login(user_name = G_UserName, password=G_PassWord):
     if response.status_code != 200:
         raise Exception('POST /login {}'.format(response.status_code))
     session = response.headers['Set-Cookie'].split(',')[2].split(';')[0].strip()
-    return session
-session = login()
-print(session)
+    ExpireDate = response.headers["Set-Cookie"].split(",")[1].split(";")[0].strip()
+    ExpireDate = datetime.strptime(ExpireDate, "%d-%b-%Y %H:%M:%S %Z")
+    G_session = session
+    G_ExpireDate = ExpireDate
+    return session,ExpireDate
+session,ExpireDate = login()
+
+print(session, ExpireDate)
