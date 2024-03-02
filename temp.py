@@ -7,10 +7,10 @@ y = "This is the second line"
 
 # Create a temporary file with a specific name
 temp_dir = tempfile.gettempdir()
-file_name = os.path.join(temp_dir, "ehsanre.txt")
+file_name = os.path.join(tempfile.gettempdir(), "ehsanre.txt")
 
 # Write to the temporary file
-with open(file_name, "w") as f:
+with open(os.path.join(tempfile.gettempdir(), "ehsanre.txt"), "w") as f:
     f.write(x + "\n")
     f.write(y + "\n")
 
@@ -18,7 +18,7 @@ print(f"Temporary file created at {file_name}")
 
 from datetime import datetime
 import json
-#current_date = datetime.now().date()
+# current_date = datetime.now().date()
 json_date = datetime.now().date().isoformat()
 
 print(f"Today's date in JSON format: {json_date}")

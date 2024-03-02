@@ -2,12 +2,20 @@ import requests
 import rsa
 import json
 import binascii
+import tempfile
+import os
 from datetime import datetime
-G_sessionv =""
+G_session =""
 G_ExpireDate = datetime(2020, 3, 15)
-G_BaseURL = "http://127.0.0.1/PortfolioDEV"
+G_protocol = "http"
+G_ServerName = "127.0.0.1"
+G_ServerPort="80"
+G_RahkaranName = "PortfolioDEV"
+G_BaseURL = G_protocol + "://" + G_ServerName +":"+"80"+ "/" + G_RahkaranName
+G_AuthenticationName = "sg-auth-"
 G_UserName ="admin"
 G_PassWord = "admin"
+
 def hex_string_to_bytes(hex_string):
     return binascii.unhexlify(hex_string)
 
@@ -16,8 +24,9 @@ def bytes_to_hex_string(byte_array):
 
 def login(user_name = G_UserName, password=G_PassWord):
     global G_ExpireDate
-    if datetime.now() > G_ExpireDate :
-        return G_sessionv,G_ExpireDate
+    global G_session
+    if datetime.now() < G_ExpireDate :
+        return G_session,G_ExpireDate
     url = G_BaseURL+"/Services/Framework/AuthenticationService.svc"
     session_url = url + "/session"
     login_url = url + "/login"
@@ -45,6 +54,9 @@ def login(user_name = G_UserName, password=G_PassWord):
     ExpireDate = datetime.strptime(ExpireDate, "%d-%b-%Y %H:%M:%S %Z")
     G_session = session
     G_ExpireDate = ExpireDate
+    with open(os.path.join(tempfile.gettempdir(),G_AuthenticationName+G_RahkaranName ), "w") as f:
+        f.write(G_session + "\n")
+        f.write(G_ExpireDate.strftime('%y/%m/%d,%H/%M/%S') + "\n")
     return session,ExpireDate
 session,ExpireDate = login()
 
