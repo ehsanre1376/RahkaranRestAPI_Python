@@ -1,4 +1,4 @@
-logintest.py
+
 import requests
 import rsa
 import json
@@ -8,18 +8,22 @@ import os
 from datetime import datetime
 
 G_session = ""
-G_ExpireDate = datetime(2020, 3, 15)
+G_ExpireDate = datetime(2000, 1, 1)
 G_protocol = "http"
 G_ServerName = "127.0.0.1"
 G_ServerPort = "80"
 G_RahkaranName = "PortfolioDEV"
-G_BaseURL = self.G_protocol + "://" + self.G_ServerName + ":" + "80" + "/" + self.G_RahkaranName
+G_BaseURL = G_protocol + "://" + G_ServerName + ":" + "80" + "/" + G_RahkaranName
 G_AuthenticationName = "sg-auth-"
-G_UserName = user_name
-G_PassWord = password
+G_UserName = ""
+G_PassWord = ""
 
 class RahkaranLogin:
+    
     def __init__(self, user_name="admin", password="admin"):
+        global G_ExpireDate
+        global G_AuthenticationName
+        global G_RahkaranName
         if G_ExpireDate < datetime.now():
             try:
                 with open(
@@ -34,7 +38,7 @@ class RahkaranLogin:
                     G_ExpireDate = datetime.strptime(content[1].strip(), "%d-%b-%Y %H:%M:%S")
             except FileNotFoundError:
                 print(f"The file {os.path.join(
-                        tempfile.gettempdir(), self.G_AuthenticationName + self.G_RahkaranName + ".txt"
+                        tempfile.gettempdir(), G_AuthenticationName + G_RahkaranName + ".txt"
                     )} does not exist.")
             except IOError:
                 print("An error occurred while trying to read the file.")
@@ -50,9 +54,8 @@ class RahkaranLogin:
         return binascii.hexlify(byte_array).decode()
 
     def login(self):
-        
 
-        if datetime.now() < self.G_ExpireDate:
+        if datetime.now() < G_ExpireDate:
             return self.G_session, self.G_ExpireDate
         url = self.G_BaseURL + "/Services/Framework/AuthenticationService.svc"
         session_url = url + "/session"
