@@ -1,3 +1,5 @@
+"""Login Rahkaran"""
+
 import requests
 import rsa
 import json
@@ -31,9 +33,9 @@ def login(user_name = G_UserName, password=G_PassWord):
     session_url = url + "/session"
     login_url = url + "/login"
 
-    response = requests.get(session_url)
+    response = requests.get(session_url, timeout=10)
     if response.status_code != 200:
-        raise Exception('GET /session {}'.format(response.status_code))
+        raise ValueError(f"GET /session {response.status_code}")
     session = json.loads(response.text)
     m = hex_string_to_bytes(session['rsa']['M'])
     e = hex_string_to_bytes(session['rsa']['E'])
@@ -46,9 +48,9 @@ def login(user_name = G_UserName, password=G_PassWord):
         'username': user_name,
         'password': bytes_to_hex_string(encrypted_password)
     }
-    response = requests.post(login_url, headers=headers, data=json.dumps(data))
+    response = requests.post(login_url, headers=headers, data=json.dumps(data),timeout=10)
     if response.status_code != 200:
-        raise Exception('POST /login {}'.format(response.status_code))
+        raise ValueError(f"POST /login {response.status_code}")
     session = response.headers['Set-Cookie'].split(',')[2].split(';')[0].strip()
     ExpireDate = response.headers["Set-Cookie"].split(",")[1].split(";")[0].strip()
     ExpireDate = datetime.strptime(ExpireDate, "%d-%b-%Y %H:%M:%S %Z")
