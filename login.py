@@ -27,6 +27,13 @@ def bytes_to_hex_string(byte_array):
 def login(user_name = G_UserName, password=G_PassWord):
     global G_ExpireDate
     global G_session
+    # with open(
+    #    tempfile.gettempdir(), G_AuthenticationName + G_RahkaranName + ".txt", "r") as file:
+    #    content = file.read()
+    with open(
+        r"C:\Users\EHSANRE\AppData\Local\Temp\sg-auth-PortfolioDEV.txt", "r"
+    ) as file:
+        content = file.read()
     if datetime.now() < G_ExpireDate :
         return G_session,G_ExpireDate
     url = G_BaseURL+"/Services/Framework/AuthenticationService.svc"
@@ -56,7 +63,7 @@ def login(user_name = G_UserName, password=G_PassWord):
     ExpireDate = datetime.strptime(ExpireDate, "%d-%b-%Y %H:%M:%S %Z")
     G_session = session
     G_ExpireDate = ExpireDate
-    with open(os.path.join(tempfile.gettempdir(),G_AuthenticationName+G_RahkaranName ), "w",encoding="utf-8") as f:
+    with open(os.path.join(tempfile.gettempdir(),G_AuthenticationName+G_RahkaranName+".txt" ), "w",encoding="utf-8") as f:
         f.write(G_session + "\n")
         f.write(G_ExpireDate.strftime('%y/%m/%d,%H/%M/%S') + "\n")
     return session,ExpireDate
