@@ -54,7 +54,7 @@ def login(user_name = G_UserName, password=G_PassWord):
     ExpireDate = datetime.strptime(ExpireDate, "%d-%b-%Y %H:%M:%S %Z")
     G_session = session
     G_ExpireDate = ExpireDate
-    with open(os.path.join(tempfile.gettempdir(),G_AuthenticationName+G_RahkaranName ), "w") as f:
+    with open(os.path.join(tempfile.gettempdir(),G_AuthenticationName+G_RahkaranName ), "w",encoding="utf-8") as f:
         f.write(G_session + "\n")
         f.write(G_ExpireDate.strftime('%y/%m/%d,%H/%M/%S') + "\n")
     return session,ExpireDate
