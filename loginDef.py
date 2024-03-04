@@ -22,10 +22,14 @@ def hex_string_to_bytes(hex_string):
     return binascii.unhexlify(hex_string)
 def bytes_to_hex_string(byte_array):
     return binascii.hexlify(byte_array).decode()
-def login(user_name=G_UserName, password=G_PassWord):
+
+
+def login(Is_this_Not_Firest_Try=False):
     global G_ExpireDate
     global G_session
-    if G_ExpireDate < datetime.now():
+    if Is_this_Not_Firest_Try:
+        SendRequestlogin()
+    elif G_ExpireDate < datetime.now():
         try:
             with open(
                 os.path.join(
@@ -37,17 +41,13 @@ def login(user_name=G_UserName, password=G_PassWord):
                 content = file.readlines()
                 G_session = content[0]
                 G_ExpireDate =datetime.strptime(content[1].strip(), "%d-%b-%Y %H:%M:%S")
-        except FileNotFoundError:
-            print(f"The file {os.path.join(
-                    tempfile.gettempdir(), G_AuthenticationName + G_RahkaranName + ".txt"
-                )} does not exist.")
-        except IOError:
-            print("An error occurred while trying to read the file.")
+                if datetime.now() < G_ExpireDate:
+                    SendRequestlogin()
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            SendRequestlogin()
 
-    if datetime.now() < G_ExpireDate:
-        return G_session, G_ExpireDate
+
+def SendRequestlogin(user_name=G_UserName, password=G_PassWord):
     url = G_BaseURL + "/Services/Framework/AuthenticationService.svc"
     session_url = url + "/session"
     login_url = url + "/login"
