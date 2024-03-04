@@ -6,10 +6,9 @@ import json
 import binascii
 import tempfile
 import os
-from datetime import datetime
-
+from datetime import datetime, timedelta
 G_session = ""
-G_ExpireDate = datetime(2020, 3, 15)
+G_ExpireDate  = datetime.now() - timedelta(minutes=5)
 G_protocol = "http"
 G_ServerName = "127.0.0.1"
 G_ServerPort = "80"
@@ -18,6 +17,8 @@ G_BaseURL = G_protocol + "://" + G_ServerName + ":" + "80" + "/" + G_RahkaranNam
 G_AuthenticationName = "sg-auth-"
 G_UserName = "admin"
 G_PassWord = "admin"
+
+
 def hex_string_to_bytes(hex_string):
     return binascii.unhexlify(hex_string)
 def bytes_to_hex_string(byte_array):
@@ -28,7 +29,7 @@ def login(Is_this_Not_Firest_Try=False):
     global G_ExpireDate
     global G_session
     if Is_this_Not_Firest_Try:
-        SendRequestlogin()
+        return SendRequestlogin()
     elif G_ExpireDate < datetime.now():
         try:
             with open(
@@ -41,10 +42,14 @@ def login(Is_this_Not_Firest_Try=False):
                 content = file.readlines()
                 G_session = content[0]
                 G_ExpireDate =datetime.strptime(content[1].strip(), "%d-%b-%Y %H:%M:%S")
-                if datetime.now() < G_ExpireDate:
-                    SendRequestlogin()
+                if datetime.now() > G_ExpireDate:
+                    return SendRequestlogin()
+                else:
+                    return G_session
         except Exception as e:
-            SendRequestlogin()
+            return SendRequestlogin()
+    else:
+        return G_session
 
 
 def SendRequestlogin(user_name=G_UserName, password=G_PassWord):
@@ -88,9 +93,10 @@ def SendRequestlogin(user_name=G_UserName, password=G_PassWord):
     ) as f:
         f.write(G_session+"\n" )
         f.write(G_ExpireDate.strftime("%d-%b-%Y %H:%M:%S %Z"))
-    return session, ExpireDate
+    return session
 
 
-session, ExpireDate = login()
-
-print(session, ExpireDate)
+session = login()
+session2 = login()
+session3= login()
+print(session, "---------", session2, "---------",session3)
