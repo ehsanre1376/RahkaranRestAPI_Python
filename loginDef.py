@@ -7,8 +7,9 @@ import binascii
 import tempfile
 import os
 from datetime import datetime, timedelta
+
 G_session = ""
-G_ExpireDate  = datetime.now() - timedelta(minutes=5)
+G_ExpireDate = datetime.now() - timedelta(minutes=5)
 G_protocol = "http"
 G_ServerName = "127.0.0.1"
 G_ServerPort = "80"
@@ -21,6 +22,8 @@ G_PassWord = "admin"
 
 def hex_string_to_bytes(hex_string):
     return binascii.unhexlify(hex_string)
+
+
 def bytes_to_hex_string(byte_array):
     return binascii.hexlify(byte_array).decode()
 
@@ -34,14 +37,17 @@ def login(Is_this_Not_Firest_Try=False):
         try:
             with open(
                 os.path.join(
-                    tempfile.gettempdir(), G_AuthenticationName + G_RahkaranName + ".txt"
+                    tempfile.gettempdir(),
+                    G_AuthenticationName + G_RahkaranName + ".txt",
                 ),
                 "r",
                 encoding="utf-8",
             ) as file:
                 content = file.readlines()
-                G_session = content[0]
-                G_ExpireDate =datetime.strptime(content[1].strip(), "%d-%b-%Y %H:%M:%S")
+                G_session = content[0][:-2]
+                G_ExpireDate = datetime.strptime(
+                    content[1].strip(), "%d-%b-%Y %H:%M:%S"
+                )
                 if datetime.now() > G_ExpireDate:
                     return SendRequestlogin()
                 else:
@@ -91,12 +97,12 @@ def SendRequestlogin(user_name=G_UserName, password=G_PassWord):
         "w",
         encoding="utf-8",
     ) as f:
-        f.write(G_session+"\n" )
+        f.write(G_session + "\n")
         f.write(G_ExpireDate.strftime("%d-%b-%Y %H:%M:%S %Z"))
     return session
 
 
 session = login()
 session2 = login()
-session3= login()
-print(session, "---------", session2, "---------",session3)
+session3 = login()
+print(session, "---------", session2, "---------", session3)
