@@ -102,7 +102,7 @@ def SendRequestlogin(user_name=G_UserName, password=G_PassWord):
     return session
 
 
-session = login()
-session2 = login()
-session3 = login()
-print(session, "---------", session2, "---------", session3)
+#session = login()
+#session2 = login()
+#session3 = login()
+#print(session, "---------", session2, "---------", session3)
